@@ -26,6 +26,8 @@ target_sources(AUDIOCORE_DARK_BASS PRIVATE
     Source/PluginEditor.cpp
     Source/PluginEditor.h
 )
+juce_generate_juce_header(AUDIOCORE_DARK_BASS)
+
 target_compile_features(AUDIOCORE_DARK_BASS PRIVATE cxx_std_17)
 target_compile_definitions(AUDIOCORE_DARK_BASS PUBLIC
     JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_VST3_CAN_REPLACE_VST2=0
