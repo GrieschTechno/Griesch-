@@ -9,12 +9,21 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Install CMake and Ninja
         uses: lukka/get-cmake@latest
-      - name: Configure
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Set up Microsoft Visual C++ environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure with MSVC
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl
+
       - name: Build VST3 and Standalone
         run: cmake --build build --config Release --parallel
+
       - name: Package plugin
         shell: pwsh
         run: |
@@ -23,6 +32,7 @@ jobs:
           if ($null -eq $plugin) { throw "VST3 bundle was not produced." }
           Compress-Archive -Path $plugin.FullName -DestinationPath dist/AUDIOCORE_DARK_BASS_VST3.zip -Force
           Get-ChildItem -Path build -Recurse -Filter "*.exe" | ForEach-Object { Copy-Item $_.FullName -Destination dist -Force }
+
       - uses: actions/upload-artifact@v4
         with:
           name: AUDIOCORE-DARK-BASS-Windows
